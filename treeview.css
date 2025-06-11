@@ -1,0 +1,21 @@
+.treeview {
+  font-size: 14px;
+}
+.treeview ul {
+  list-style: none;
+  margin: 0;
+  padding-left: 1em;
+  border-left: 1px dotted #ccc;
+}
+.treeview li {
+  margin: 0;
+  padding-left: 0.5em;
+}
+.treeview .tv-label {
+  cursor: pointer;
+  display: inline-block;
+  padding: 2px 0;
+}
+.treeview .tv-collapsed > ul {
+  display: none;
+}
