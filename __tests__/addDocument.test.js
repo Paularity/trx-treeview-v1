@@ -11,7 +11,7 @@ beforeAll(async () => {
   const inline = html
     .replace('<script src="tailwindstub.js"></script>', '')
     .replace('<link rel="stylesheet" href="treeview.css"/>', '')
-    .replace('node_modules/jquery/dist/jquery.min.js', 'file://' + jqueryPath)
+    .replace('jquery.min.js', 'file://' + jqueryPath)
     .replace('treeview.js', 'file://' + treeviewPath);
   dom = new JSDOM(inline, { runScripts: 'dangerously', resources: 'usable', url: 'http://localhost' });
   await new Promise((resolve) => {
