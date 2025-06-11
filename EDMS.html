@@ -1,220 +1,305 @@
-
 <!DOCTYPE html>
 <html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>EDMS - TreeView + CRUD</title>
-  <script src="tailwindstub.js"></script>
-  <link rel="stylesheet" href="tailwind.css"/>
-  <link rel="stylesheet" href="treeview.css"/>
-  <script src="jquery.min.js"></script>
-  <script src="treeview.js"></script>
-</head>
-<body class="bg-gray-100 text-gray-800 p-6 font-sans">
-  <div class="mb-4 space-x-2">
-    <button id="toggleExplorer" class="px-2 py-1 border rounded">Toggle Explorer</button>
-    <button id="toggleRegister" class="px-2 py-1 border rounded">Toggle Register</button>
-    <button id="toggleDetails" class="px-2 py-1 border rounded">Toggle Details</button>
-  </div>
-  <div class="grid grid-cols-4 gap-4">
-    <div class="col-span-1 bg-white p-4 rounded shadow explorer">
-      <h2 class="text-lg font-semibold mb-4">Project Explorer</h2>
-      <div id="treeview"></div>
-      <button onclick="addProject()" class="mt-4 w-full bg-blue-600 text-white py-2 rounded">+ Add Project</button>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>EDMS - TreeView + CRUD</title>
+    <script src="tailwindstub.js"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="treeview.css" />
+    <script src="jquery.min.js"></script>
+    <script src="treeview.js"></script>
+  </head>
+  <body class="bg-gray-100 text-gray-800 p-6 font-sans">
+    <div class="mb-4 space-x-2">
+      <button id="toggleExplorer" class="px-2 py-1 border rounded">
+        Toggle Explorer
+      </button>
+      <button id="toggleRegister" class="px-2 py-1 border rounded">
+        Toggle Register
+      </button>
+      <button id="toggleDetails" class="px-2 py-1 border rounded">
+        Toggle Details
+      </button>
     </div>
+    <div class="grid grid-cols-4 gap-4">
+      <div class="col-span-1 bg-white p-4 rounded shadow explorer">
+        <h2 class="text-lg font-semibold mb-4">Project Explorer</h2>
+        <div id="treeview"></div>
+        <button
+          onclick="addProject()"
+          class="mt-4 w-full bg-blue-600 text-white py-2 rounded"
+        >
+          + Add Project
+        </button>
+      </div>
 
-    <div class="col-span-3 space-y-4 register">
-      <div class="bg-white p-4 rounded shadow register-section">
-        <div class="flex justify-between items-center mb-2">
-          <h2 class="text-lg font-semibold">Document Register</h2>
-          <button onclick="openDocModal()" class="bg-green-600 text-white px-4 py-2 rounded">+ Add Document</button>
+      <div class="col-span-3 space-y-4 register">
+        <div class="bg-white p-4 rounded shadow register-section">
+          <div class="flex justify-between items-center mb-2">
+            <h2 class="text-lg font-semibold">Document Register</h2>
+            <button
+              onclick="openDocModal()"
+              class="bg-green-600 text-white px-4 py-2 rounded"
+            >
+              + Add Document
+            </button>
+          </div>
+          <table class="w-full text-sm border">
+            <thead class="bg-gray-100">
+              <tr>
+                <th class="border px-2 py-1">Project</th>
+                <th class="border px-2 py-1">Title</th>
+                <th class="border px-2 py-1">Code</th>
+                <th class="border px-2 py-1">Version</th>
+                <th class="border px-2 py-1">Actions</th>
+              </tr>
+            </thead>
+            <tbody id="docTableBody"></tbody>
+          </table>
         </div>
-        <table class="w-full text-sm border">
-          <thead class="bg-gray-100">
-            <tr><th class="border px-2 py-1">Project</th><th class="border px-2 py-1">Title</th><th class="border px-2 py-1">Code</th><th class="border px-2 py-1">Version</th><th class="border px-2 py-1">Actions</th></tr>
-          </thead>
-          <tbody id="docTableBody"></tbody>
-        </table>
-      </div>
 
-      <div class="bg-white p-4 rounded shadow details">
-        <h3 class="text-md font-semibold mb-2">Related Document Details</h3>
-        <div id="docDetails" class="text-sm text-gray-600 italic">Select a document to view details.</div>
+        <div class="bg-white p-4 rounded shadow details">
+          <h3 class="text-md font-semibold mb-2">Related Document Details</h3>
+          <div id="docDetails" class="text-sm text-gray-600 italic">
+            Select a document to view details.
+          </div>
+        </div>
       </div>
     </div>
-  </div>
 
-  <!-- Modal -->
-  <div id="docModal" class="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center hidden">
-    <div class="bg-white p-6 rounded w-full max-w-lg">
-      <h2 class="text-lg font-bold mb-4" id="modalTitle">Add Document</h2>
-      <form id="docForm">
-        <input type="hidden" id="docId" />
-        <div class="mb-2"><label class="block text-sm">Project</label><input id="docProject" class="w-full border px-2 py-1 rounded" required></div>
-        <div class="mb-2"><label class="block text-sm">Title</label><input id="docTitle" class="w-full border px-2 py-1 rounded" required></div>
-        <div class="mb-2"><label class="block text-sm">Code</label><input id="docCode" class="w-full border px-2 py-1 rounded" required></div>
-        <div class="mb-2"><label class="block text-sm">Version</label><input id="docVersion" class="w-full border px-2 py-1 rounded" required></div>
-        <div class="mt-4 flex justify-end gap-2"><button type="button" onclick="closeModal()" class="border px-4 py-2 rounded">Cancel</button><button type="submit" class="bg-blue-600 text-white px-4 py-2 rounded">Save</button></div>
-      </form>
+    <!-- Modal -->
+    <div
+      id="docModal"
+      class="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center hidden"
+    >
+      <div class="bg-white p-6 rounded w-full max-w-lg">
+        <h2 class="text-lg font-bold mb-4" id="modalTitle">Add Document</h2>
+        <form id="docForm">
+          <input type="hidden" id="docId" />
+          <div class="mb-2">
+            <label class="block text-sm">Project</label
+            ><input
+              id="docProject"
+              class="w-full border px-2 py-1 rounded"
+              required
+            />
+          </div>
+          <div class="mb-2">
+            <label class="block text-sm">Title</label
+            ><input
+              id="docTitle"
+              class="w-full border px-2 py-1 rounded"
+              required
+            />
+          </div>
+          <div class="mb-2">
+            <label class="block text-sm">Code</label
+            ><input
+              id="docCode"
+              class="w-full border px-2 py-1 rounded"
+              required
+            />
+          </div>
+          <div class="mb-2">
+            <label class="block text-sm">Version</label
+            ><input
+              id="docVersion"
+              class="w-full border px-2 py-1 rounded"
+              required
+            />
+          </div>
+          <div class="mt-4 flex justify-end gap-2">
+            <button
+              type="button"
+              onclick="closeModal()"
+              class="border px-4 py-2 rounded"
+            >
+              Cancel</button
+            ><button
+              type="submit"
+              class="bg-blue-600 text-white px-4 py-2 rounded"
+            >
+              Save
+            </button>
+          </div>
+        </form>
+      </div>
     </div>
-  </div>
 
-  <script>
-    const projects = [
-      {
-        text: "2200 - Leach Project",
-        nodes: [
-          { text: "2200-01 - Assembly" },
-          { text: "2200-02 - Docs" }
-        ]
-      },
-      {
-        text: "2300 - Mining Project",
-        nodes: [
-          { text: "2300-01 - Plans" },
-          { text: "2300-02 - Reports" }
-        ]
-      }
-    ];
+    <script>
+      const projects = [
+        {
+          text: "2200 - Leach Project",
+          nodes: [{ text: "2200-01 - Assembly" }, { text: "2200-02 - Docs" }],
+        },
+        {
+          text: "2300 - Mining Project",
+          nodes: [{ text: "2300-01 - Plans" }, { text: "2300-02 - Reports" }],
+        },
+      ];
 
-    const projectDetails = {
-      "2200 - Leach Project": "Main project for Leach operations.",
-      "2200-01 - Assembly": "Assembly operations.",
-      "2200-02 - Docs": "Documentation tasks.",
-      "2300 - Mining Project": "Mining project overview.",
-      "2300-01 - Plans": "Planning documents.",
-      "2300-02 - Reports": "Reporting documents."
-    };
+      const projectDetails = {
+        "2200 - Leach Project": "Main project for Leach operations.",
+        "2200-01 - Assembly": "Assembly operations.",
+        "2200-02 - Docs": "Documentation tasks.",
+        "2300 - Mining Project": "Mining project overview.",
+        "2300-01 - Plans": "Planning documents.",
+        "2300-02 - Reports": "Reporting documents.",
+      };
 
-    window.documents = [
-      {project: "2200-01 - Assembly", title: "Heater Diagram", code: "2210-XD1", version: "Rev 1"},
-      {project: "2200-02 - Docs", title: "Spec Sheet", code: "2200-SP", version: "A"},
-      {project: "2300-01 - Plans", title: "Mine Layout", code: "2300-ML", version: "0"}
-    ];
+      window.documents = [
+        {
+          project: "2200-01 - Assembly",
+          title: "Heater Diagram",
+          code: "2210-XD1",
+          version: "Rev 1",
+        },
+        {
+          project: "2200-02 - Docs",
+          title: "Spec Sheet",
+          code: "2200-SP",
+          version: "A",
+        },
+        {
+          project: "2300-01 - Plans",
+          title: "Mine Layout",
+          code: "2300-ML",
+          version: "0",
+        },
+      ];
 
-    const STORAGE_KEY = 'edmsDocs';
+      const STORAGE_KEY = "edmsDocs";
 
-    function loadDocs() {
-      const saved = localStorage.getItem(STORAGE_KEY);
-      if (saved) {
-        documents.length = 0;
-        documents.push(...JSON.parse(saved));
-      }
-    }
-
-    function saveDocs() {
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(documents));
-    }
-
-    function getDocsForNode(node) {
-      const names = [];
-      (function traverse(n){
-        names.push(n.text);
-        if (n.nodes) n.nodes.forEach(traverse);
-      })(node);
-      return documents.filter(d => names.includes(d.project));
-    }
-
-    function showDocDetails(doc) {
-      $("#docDetails").html(
-        `<div><strong>Project:</strong> ${doc.project}</div>`+
-        `<div><strong>Title:</strong> ${doc.title}</div>`+
-        `<div><strong>Code:</strong> ${doc.code}</div>`+
-        `<div><strong>Version:</strong> ${doc.version}</div>`
-      );
-    }
-
-    function renderTree() {
-      new TreeView(document.getElementById("treeview"), {
-        data: projects,
-        onNodeClick: function(node) {
-          const docs = getDocsForNode(node);
-          renderDocs(docs);
-          $("#docDetails").html(`<strong>Selected Project:</strong> ${node.text}<br><em>${projectDetails[node.text] || ''}</em>`);
+      function loadDocs() {
+        const saved = localStorage.getItem(STORAGE_KEY);
+        if (saved) {
+          documents.length = 0;
+          documents.push(...JSON.parse(saved));
         }
-      });
-    }
+      }
 
-    function renderDocs(docs = documents) {
-      const tbody = $("#docTableBody").empty();
-      docs.forEach((d, i) => {
-        const idx = documents.indexOf(d);
-        const row = $(`<tr data-index="${idx}" class="cursor-pointer hover:bg-gray-50">
+      function saveDocs() {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(documents));
+      }
+
+      function getDocsForNode(node) {
+        const names = [];
+        (function traverse(n) {
+          names.push(n.text);
+          if (n.nodes) n.nodes.forEach(traverse);
+        })(node);
+        return documents.filter((d) => names.includes(d.project));
+      }
+
+      function showDocDetails(doc) {
+        $("#docDetails").html(
+          `<div><strong>Project:</strong> ${doc.project}</div>` +
+            `<div><strong>Title:</strong> ${doc.title}</div>` +
+            `<div><strong>Code:</strong> ${doc.code}</div>` +
+            `<div><strong>Version:</strong> ${doc.version}</div>`
+        );
+      }
+
+      function renderTree() {
+        new TreeView(document.getElementById("treeview"), {
+          data: projects,
+          onNodeClick: function (node) {
+            const docs = getDocsForNode(node);
+            renderDocs(docs);
+            $("#docDetails").html(
+              `<strong>Selected Project:</strong> ${node.text}<br><em>${
+                projectDetails[node.text] || ""
+              }</em>`
+            );
+          },
+        });
+      }
+
+      function renderDocs(docs = documents) {
+        const tbody = $("#docTableBody").empty();
+        docs.forEach((d, i) => {
+          const idx = documents.indexOf(d);
+          const row =
+            $(`<tr data-index="${idx}" class="cursor-pointer hover:bg-gray-50">
             <td class="border px-2 py-1">${d.project}</td>
             <td class="border px-2 py-1">${d.title}</td>
             <td class="border px-2 py-1">${d.code}</td>
             <td class="border px-2 py-1">${d.version}</td>
             <td class="border px-2 py-1"><button onclick="editDoc(${idx})" class="text-blue-600">Edit</button> | <button onclick="deleteDoc(${idx})" class="text-red-600">Delete</button></td>
           </tr>`);
-        row.click(() => showDocDetails(d));
-        tbody.append(row);
-      });
-    }
+          row.click(() => showDocDetails(d));
+          tbody.append(row);
+        });
+      }
 
-    function openDocModal() {
-      $("#modalTitle").text("Add Document");
-      $("#docForm")[0].reset();
-      $("#docId").val("");
-      $("#docModal").removeClass("hidden");
-    }
+      function openDocModal() {
+        $("#modalTitle").text("Add Document");
+        $("#docForm")[0].reset();
+        $("#docId").val("");
+        $("#docModal").removeClass("hidden");
+      }
 
-    function closeModal() { $("#docModal").addClass("hidden"); }
+      function closeModal() {
+        $("#docModal").addClass("hidden");
+      }
 
-    $("#docForm").on("submit", function(e) {
-      e.preventDefault();
-      const idx = $("#docId").val();
-      const doc = {
-        project: $("#docProject").val(),
-        title: $("#docTitle").val(),
-        code: $("#docCode").val(),
-        version: $("#docVersion").val()
-      };
-      if (idx === "") documents.push(doc);
-      else documents[idx] = doc;
-      closeModal();
-      saveDocs();
-      renderDocs();
-      showDocDetails(doc);
-    });
-
-    function editDoc(i) {
-      const d = documents[i];
-      $("#modalTitle").text("Edit Document");
-      $("#docId").val(i);
-      $("#docProject").val(d.project);
-      $("#docTitle").val(d.title);
-      $("#docCode").val(d.code);
-      $("#docVersion").val(d.version);
-      $("#docModal").removeClass("hidden");
-    }
-
-    function deleteDoc(i) {
-      if (confirm("Are you sure?")) {
-        documents.splice(i, 1);
+      $("#docForm").on("submit", function (e) {
+        e.preventDefault();
+        const idx = $("#docId").val();
+        const doc = {
+          project: $("#docProject").val(),
+          title: $("#docTitle").val(),
+          code: $("#docCode").val(),
+          version: $("#docVersion").val(),
+        };
+        if (idx === "") documents.push(doc);
+        else documents[idx] = doc;
+        closeModal();
         saveDocs();
         renderDocs();
-        $("#docDetails").html("Select a document to view details.");
-      }
-    }
+        showDocDetails(doc);
+      });
 
-    function addProject() {
-      const newProj = prompt("Enter project name:");
-      if (newProj) {
-        projects.push({text: newProj});
+      function editDoc(i) {
+        const d = documents[i];
+        $("#modalTitle").text("Edit Document");
+        $("#docId").val(i);
+        $("#docProject").val(d.project);
+        $("#docTitle").val(d.title);
+        $("#docCode").val(d.code);
+        $("#docVersion").val(d.version);
+        $("#docModal").removeClass("hidden");
+      }
+
+      function deleteDoc(i) {
+        if (confirm("Are you sure?")) {
+          documents.splice(i, 1);
+          saveDocs();
+          renderDocs();
+          $("#docDetails").html("Select a document to view details.");
+        }
+      }
+
+      function addProject() {
+        const newProj = prompt("Enter project name:");
+        if (newProj) {
+          projects.push({ text: newProj });
+          renderTree();
+        }
+      }
+
+      $(document).ready(() => {
+        loadDocs();
         renderTree();
-      }
-    }
+        renderDocs();
 
-    $(document).ready(() => {
-      loadDocs();
-      renderTree();
-      renderDocs();
-
-      $("#toggleExplorer").click(() => $(".explorer").toggleClass("hidden"));
-      $("#toggleRegister").click(() => $(".register-section").toggleClass("hidden"));
-      $("#toggleDetails").click(() => $(".details").toggleClass("hidden"));
-    });
-  </script>
-</body>
+        $("#toggleExplorer").click(() => $(".explorer").toggleClass("hidden"));
+        $("#toggleRegister").click(() =>
+          $(".register-section").toggleClass("hidden")
+        );
+        $("#toggleDetails").click(() => $(".details").toggleClass("hidden"));
+      });
+    </script>
+  </body>
 </html>
