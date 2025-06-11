@@ -4,15 +4,23 @@
   "description": "This example shows a simple document management interface with a tree view of projects and a small CRUD table. All dependencies are included locally so the page can be opened without an internet connection.",
   "main": "treeview.js",
   "scripts": {
-    "test": "jest"
+    "test": "jest",
+    "test:e2e": "playwright test"
+  },
+  "jest": {
+    "testMatch": [
+      "**/__tests__/**/*.test.js"
+    ]
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "type": "commonjs",
   "devDependencies": {
+    "@playwright/test": "^1.53.0",
     "jest": "^30.0.0",
-    "jsdom": "^26.1.0"
+    "jsdom": "^26.1.0",
+    "playwright": "^1.53.0"
   },
   "dependencies": {
     "jquery": "^3.7.1"
