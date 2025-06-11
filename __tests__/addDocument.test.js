@@ -10,6 +10,7 @@ beforeAll(async () => {
   const treeviewPath = path.resolve(path.join(__dirname, '..', 'treeview.js'));
   const inline = html
     .replace('<script src="tailwindstub.js"></script>', '')
+    .replace('<link rel="stylesheet" href="tailwind.css"/>', '')
     .replace('<link rel="stylesheet" href="treeview.css"/>', '')
     .replace('jquery.min.js', 'file://' + jqueryPath)
     .replace('treeview.js', 'file://' + treeviewPath);
