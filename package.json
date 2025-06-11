@@ -1,0 +1,20 @@
+{
+  "name": "trx-treeview-v1",
+  "version": "1.0.0",
+  "description": "This example shows a simple document management interface with a tree view of projects and a small CRUD table. All dependencies are included locally so the page can be opened without an internet connection.",
+  "main": "treeview.js",
+  "scripts": {
+    "test": "jest"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "devDependencies": {
+    "jest": "^30.0.0",
+    "jsdom": "^26.1.0"
+  },
+  "dependencies": {
+    "jquery": "^3.7.1"
+  }
+}
