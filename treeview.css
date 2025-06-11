@@ -13,8 +13,34 @@
 }
 .treeview .tv-label {
   cursor: pointer;
-  display: inline-block;
-  padding: 2px 0;
+  display: inline-flex;
+  align-items: center;
+  padding: 2px 4px;
+  border-radius: 4px;
+}
+.treeview .tv-label:hover {
+  background-color: #f0f0f0;
+}
+.treeview .tv-label:active {
+  background-color: #e0e7ff;
+}
+.treeview .tv-label:focus {
+  outline: 2px solid #3b82f6;
+}
+.treeview .tv-label.selected {
+  background-color: #bfdbfe;
+}
+.treeview .tv-label::before {
+  margin-right: 4px;
+}
+.treeview .tv-item[data-level="0"] > .tv-label::before {
+  content: "\1F4C1"; /* folder */
+}
+.treeview .tv-item[data-level="1"] > .tv-label::before {
+  content: "\1F4C4"; /* document */
+}
+.treeview .tv-item[data-level="2"] > .tv-label::before {
+  content: "\2022"; /* bullet */
 }
 .treeview .tv-collapsed > ul {
   display: none;
