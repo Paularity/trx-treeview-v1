@@ -5,9 +5,9 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>EDMS - TreeView + CRUD</title>
-  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="tailwindstub.js"></script>
   <link rel="stylesheet" href="treeview.css"/>
-  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+  <script src="node_modules/jquery/dist/jquery.min.js"></script>
   <script src="treeview.js"></script>
 </head>
 <body class="bg-gray-100 text-gray-800 p-6 font-sans">
@@ -86,7 +86,7 @@
       "2300-02 - Reports": "Reporting documents."
     };
 
-    const documents = [
+    window.documents = [
       {project: "2200-01 - Assembly", title: "Heater Diagram", code: "2210-XD1", version: "Rev 1"},
       {project: "2200-02 - Docs", title: "Spec Sheet", code: "2200-SP", version: "A"},
       {project: "2300-01 - Plans", title: "Mine Layout", code: "2300-ML", version: "0"}
@@ -138,12 +138,13 @@
     function renderDocs(docs = documents) {
       const tbody = $("#docTableBody").empty();
       docs.forEach((d, i) => {
-        const row = $(`<tr data-index="${i}" class="cursor-pointer hover:bg-gray-50">
+        const idx = documents.indexOf(d);
+        const row = $(`<tr data-index="${idx}" class="cursor-pointer hover:bg-gray-50">
             <td class="border px-2 py-1">${d.project}</td>
             <td class="border px-2 py-1">${d.title}</td>
             <td class="border px-2 py-1">${d.code}</td>
             <td class="border px-2 py-1">${d.version}</td>
-            <td class="border px-2 py-1"><button onclick="editDoc(${i})" class="text-blue-600">Edit</button> | <button onclick="deleteDoc(${i})" class="text-red-600">Delete</button></td>
+            <td class="border px-2 py-1"><button onclick="editDoc(${idx})" class="text-blue-600">Edit</button> | <button onclick="deleteDoc(${idx})" class="text-red-600">Delete</button></td>
           </tr>`);
         row.click(() => showDocDetails(d));
         tbody.append(row);
