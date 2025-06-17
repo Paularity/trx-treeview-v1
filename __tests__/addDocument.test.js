@@ -201,3 +201,25 @@ test('tree shows stored projects on reload', async () => {
   const labels = [...dom2.window.document.querySelectorAll('.tv-label')].map((l) => l.textContent);
   expect(labels).toContain(newProj);
 });
+
+test('adding child project nests under existing parent', () => {
+  const { window } = dom;
+  window.openDocModal();
+  const childProj = '2200-03 - New Child';
+  const select = window.document.getElementById('docProject');
+  const opt = window.document.createElement('option');
+  opt.value = childProj;
+  opt.textContent = childProj;
+  select.appendChild(opt);
+  select.value = childProj;
+  window.document.getElementById('docTitle').value = 'Child Doc 2';
+  window.document.getElementById('docCode').value = 'CH2';
+  window.document.getElementById('docVersion').value = '1';
+  window.document.getElementById('docForm').dispatchEvent(
+    new window.Event('submit', { bubbles: true, cancelable: true })
+  );
+  const rootLevel = [...window.document.querySelectorAll('.tv-item[data-level="0"] > .tv-label')];
+  const childLevel = [...window.document.querySelectorAll('.tv-item[data-level="1"] .tv-label')];
+  expect(rootLevel.find(l => l.textContent === childProj)).toBeUndefined();
+  expect(childLevel.find(l => l.textContent === childProj)).toBeDefined();
+});
