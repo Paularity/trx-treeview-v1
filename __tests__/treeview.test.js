@@ -51,6 +51,14 @@ test('newly added project is selected', () => {
   expect(selected.textContent).toBe('Selected Project');
 });
 
+test('addProject nests child names under the correct root', () => {
+  dom.window.prompt = jest.fn().mockReturnValue('2200-04 - Extra Child');
+  dom.window.addProject();
+  const root = dom.window.findProject('2200 - Leach Project');
+  const childNames = root.nodes.map(n => n.text);
+  expect(childNames).toContain('2200-04 - Extra Child');
+});
+
 test('node click selects the node', () => {
   const label = dom.window.document.querySelector('.tv-label');
   label.click();

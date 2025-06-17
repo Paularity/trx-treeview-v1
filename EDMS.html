@@ -362,7 +362,7 @@
       function addProject() {
         const newProj = prompt("Enter project name:");
         if (newProj) {
-          projects.push({ text: newProj });
+          addProjectNode(newProj);
           selectedProject = newProj;
           renderTree();
         }
