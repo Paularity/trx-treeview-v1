@@ -62,6 +62,24 @@ test('adding a document updates the table and list', () => {
   expect(lastRow.firstElementChild.textContent).toBe('2200 - Leach Project');
 });
 
+test('selection persists after adding a document', () => {
+  const { window } = dom;
+  const label = [...window.document.querySelectorAll('.tv-label')].find(
+    (el) => el.textContent === '2200 - Leach Project'
+  );
+  label.click();
+  window.openDocModal();
+  window.document.getElementById('docProject').value = '2200 - Leach Project';
+  window.document.getElementById('docTitle').value = 'Persist';
+  window.document.getElementById('docCode').value = 'PRS';
+  window.document.getElementById('docVersion').value = '1';
+  window.document.getElementById('docForm').dispatchEvent(
+    new window.Event('submit', { bubbles: true, cancelable: true })
+  );
+  const selected = window.document.querySelector('.tv-label.selected');
+  expect(selected.textContent).toBe('2200 - Leach Project');
+});
+
 test('child document appears when parent is selected', () => {
   const { window } = dom;
   window.openDocModal();
