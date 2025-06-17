@@ -222,7 +222,7 @@
       }
 
       function renderTree() {
-        new TreeView(document.getElementById("treeview"), {
+        const tree = new TreeView(document.getElementById("treeview"), {
           data: projects,
           onNodeClick: function (node) {
             selectedProject = node.text;
@@ -235,6 +235,12 @@
             );
           },
         });
+        if (selectedProject) {
+          const label = [...document.querySelectorAll('#treeview .tv-label')].find(
+            (el) => el.textContent === selectedProject
+          );
+          if (label) label.click();
+        }
       }
 
       function renderDocs(docs = documents) {
@@ -284,6 +290,8 @@
         saveDocs();
         renderDocs();
         showDocDetails(doc);
+        selectedProject = doc.project;
+        renderTree();
       });
 
       function editDoc(i) {
@@ -304,6 +312,8 @@
           saveDocs();
           renderDocs();
           $("#docDetails").html("Select a document to view details.");
+          selectedProject = null;
+          renderTree();
         }
       }
 
@@ -311,6 +321,7 @@
         const newProj = prompt("Enter project name:");
         if (newProj) {
           projects.push({ text: newProj });
+          selectedProject = newProj;
           renderTree();
         }
       }
