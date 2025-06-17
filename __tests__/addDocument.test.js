@@ -20,11 +20,25 @@ beforeAll(async () => {
   });
 });
 
+test('project dropdown contains existing projects', () => {
+  const { window } = dom;
+  window.openDocModal();
+  const options = [...window.document.querySelectorAll('#docProject option')].map(o => o.value);
+  expect(options).toEqual(
+    expect.arrayContaining([
+      '2200 - Leach Project',
+      '2200-01 - Assembly',
+      '2300 - Mining Project'
+    ])
+  );
+  window.closeModal();
+});
+
 test('adding a document updates the table and list', () => {
   const { window } = dom;
   const initialLen = window.documents.length;
   window.openDocModal();
-  window.document.getElementById('docProject').value = 'Test Project';
+  window.document.getElementById('docProject').value = '2200 - Leach Project';
   window.document.getElementById('docTitle').value = 'Test Doc';
   window.document.getElementById('docCode').value = 'TST';
   window.document.getElementById('docVersion').value = '1';
@@ -32,7 +46,7 @@ test('adding a document updates the table and list', () => {
   form.dispatchEvent(new window.Event('submit', { bubbles: true, cancelable: true }));
   expect(window.documents.length).toBe(initialLen + 1);
   const lastRow = window.document.querySelector('#docTableBody').lastElementChild;
-  expect(lastRow.firstElementChild.textContent).toBe('Test Project');
+  expect(lastRow.firstElementChild.textContent).toBe('2200 - Leach Project');
 });
 
 test('child document appears when parent is selected', () => {

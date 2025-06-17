@@ -78,12 +78,12 @@
         <form id="docForm">
           <input type="hidden" id="docId" />
           <div class="mb-2">
-            <label class="block text-sm">Project</label
-            ><input
+            <label class="block text-sm">Project</label>
+            <select
               id="docProject"
               class="w-full border px-2 py-1 rounded"
               required
-            />
+            ></select>
           </div>
           <div class="mb-2">
             <label class="block text-sm">Title</label
@@ -192,6 +192,24 @@
         return documents.filter((d) => names.includes(d.project));
       }
 
+      function getAllProjectNames() {
+        const all = [];
+        function traverse(n) {
+          all.push(n.text);
+          if (n.nodes) n.nodes.forEach(traverse);
+        }
+        projects.forEach(traverse);
+        return all;
+      }
+
+      function populateProjectDropdown() {
+        const select = $("#docProject");
+        select.empty();
+        getAllProjectNames().forEach((name) => {
+          select.append(`<option value="${name}">${name}</option>`);
+        });
+      }
+
       function showDocDetails(doc) {
         $("#docDetails").html(
           `<div><strong>Project:</strong> ${doc.project}</div>` +
@@ -234,6 +252,7 @@
       }
 
       function openDocModal() {
+        populateProjectDropdown();
         $("#modalTitle").text("Add Document");
         $("#docForm")[0].reset();
         $("#docId").val("");
@@ -263,6 +282,7 @@
 
       function editDoc(i) {
         const d = documents[i];
+        populateProjectDropdown();
         $("#modalTitle").text("Edit Document");
         $("#docId").val(i);
         $("#docProject").val(d.project);
@@ -293,6 +313,7 @@
         loadDocs();
         renderTree();
         renderDocs();
+        populateProjectDropdown();
 
         $("#toggleExplorer").click(() => $(".explorer").toggleClass("hidden"));
         $("#toggleRegister").click(() =>
