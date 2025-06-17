@@ -204,6 +204,17 @@
         return all;
       }
 
+      function findProject(name, nodes = projects) {
+        for (const node of nodes) {
+          if (node.text === name) return node;
+          if (node.nodes) {
+            const found = findProject(name, node.nodes);
+            if (found) return found;
+          }
+        }
+        return null;
+      }
+
       function populateProjectDropdown() {
         const select = $("#docProject");
         select.empty();
@@ -286,6 +297,11 @@
         };
         if (idx === "") documents.push(doc);
         else documents[idx] = doc;
+
+        if (!findProject(doc.project)) {
+          projects.push({ text: doc.project });
+        }
+
         closeModal();
         saveDocs();
         renderDocs();
