@@ -216,11 +216,38 @@
         return null;
       }
 
+      function addProjectNode(name) {
+        if (findProject(name)) return;
+        const codePart = name.split(' - ')[0];
+        const segments = codePart.split('-');
+        segments.pop();
+        while (segments.length) {
+          const parentCode = segments.join('-');
+          const parent = findProjectByCode(parentCode);
+          if (parent) {
+            parent.nodes = parent.nodes || [];
+            parent.nodes.push({ text: name });
+            return;
+          }
+          segments.pop();
+        }
+        projects.push({ text: name });
+      }
+
+      function findProjectByCode(code, nodes = projects) {
+        for (const node of nodes) {
+          if (node.text.startsWith(code + ' ') || node.text.startsWith(code + ' -')) return node;
+          if (node.nodes) {
+            const found = findProjectByCode(code, node.nodes);
+            if (found) return found;
+          }
+        }
+        return null;
+      }
+
       function ensureProjectsFromDocs() {
         documents.forEach(doc => {
-          if (!findProject(doc.project)) {
-            projects.push({ text: doc.project });
-          }
+          addProjectNode(doc.project);
         });
       }
 
@@ -307,9 +334,7 @@
         if (idx === "") documents.push(doc);
         else documents[idx] = doc;
 
-        if (!findProject(doc.project)) {
-          projects.push({ text: doc.project });
-        }
+        addProjectNode(doc.project);
 
         closeModal();
         saveDocs();
