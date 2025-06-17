@@ -78,12 +78,12 @@
         <form id="docForm">
           <input type="hidden" id="docId" />
           <div class="mb-2">
-            <label class="block text-sm">Project</label
-            ><input
+            <label class="block text-sm">Project</label>
+            <select
               id="docProject"
               class="w-full border px-2 py-1 rounded"
               required
-            />
+            ></select>
           </div>
           <div class="mb-2">
             <label class="block text-sm">Title</label
@@ -148,6 +148,8 @@
         "2300-02 - Reports": "Reporting documents.",
       };
 
+      let selectedProject = null;
+
       window.documents = [
         {
           project: "2200-01 - Assembly",
@@ -192,6 +194,24 @@
         return documents.filter((d) => names.includes(d.project));
       }
 
+      function getAllProjectNames() {
+        const all = [];
+        function traverse(n) {
+          all.push(n.text);
+          if (n.nodes) n.nodes.forEach(traverse);
+        }
+        projects.forEach(traverse);
+        return all;
+      }
+
+      function populateProjectDropdown() {
+        const select = $("#docProject");
+        select.empty();
+        getAllProjectNames().forEach((name) => {
+          select.append(`<option value="${name}">${name}</option>`);
+        });
+      }
+
       function showDocDetails(doc) {
         $("#docDetails").html(
           `<div><strong>Project:</strong> ${doc.project}</div>` +
@@ -205,6 +225,7 @@
         new TreeView(document.getElementById("treeview"), {
           data: projects,
           onNodeClick: function (node) {
+            selectedProject = node.text;
             const docs = getDocsForNode(node);
             renderDocs(docs);
             $("#docDetails").html(
@@ -234,9 +255,13 @@
       }
 
       function openDocModal() {
+        populateProjectDropdown();
         $("#modalTitle").text("Add Document");
         $("#docForm")[0].reset();
         $("#docId").val("");
+        if (selectedProject) {
+          $("#docProject").val(selectedProject);
+        }
         $("#docModal").removeClass("hidden");
       }
 
@@ -263,6 +288,7 @@
 
       function editDoc(i) {
         const d = documents[i];
+        populateProjectDropdown();
         $("#modalTitle").text("Edit Document");
         $("#docId").val(i);
         $("#docProject").val(d.project);
@@ -293,6 +319,7 @@
         loadDocs();
         renderTree();
         renderDocs();
+        populateProjectDropdown();
 
         $("#toggleExplorer").click(() => $(".explorer").toggleClass("hidden"));
         $("#toggleRegister").click(() =>
