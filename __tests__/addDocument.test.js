@@ -102,6 +102,27 @@ test('adding a document for a new project adds a tree node', () => {
   expect(labels).toContain(newProj);
 });
 
+test('adding a document for a new child nests it under the correct root', () => {
+  const { window } = dom;
+  window.openDocModal();
+  const newProj = '2200-03 - Nested';
+  const select = window.document.getElementById('docProject');
+  const opt = window.document.createElement('option');
+  opt.value = newProj;
+  opt.textContent = newProj;
+  select.appendChild(opt);
+  select.value = newProj;
+  window.document.getElementById('docTitle').value = 'Nest';
+  window.document.getElementById('docCode').value = 'NST';
+  window.document.getElementById('docVersion').value = '1';
+  window.document.getElementById('docForm').dispatchEvent(
+    new window.Event('submit', { bubbles: true, cancelable: true })
+  );
+  const root = window.findProject('2200 - Leach Project');
+  const childNames = root.nodes.map(n => n.text);
+  expect(childNames).toContain(newProj);
+});
+
 test('child document appears when parent is selected', () => {
   const { window } = dom;
   window.openDocModal();
@@ -158,4 +179,46 @@ test('deleteDoc removes a document', () => {
   expect(window.documents.length).toBe(initial - 1);
   const rows = window.document.querySelectorAll('#docTableBody tr');
   expect(rows.length).toBe(initial - 1);
+});
+
+test('tree shows stored projects on reload', async () => {
+  const { window } = dom;
+  window.openDocModal();
+  const newProj = '3000 - Persisted';
+  const select = window.document.getElementById('docProject');
+  const opt = window.document.createElement('option');
+  opt.value = newProj;
+  opt.textContent = newProj;
+  select.appendChild(opt);
+  select.value = newProj;
+  window.document.getElementById('docTitle').value = 'Persist';
+  window.document.getElementById('docCode').value = 'PST';
+  window.document.getElementById('docVersion').value = '1';
+  window.document.getElementById('docForm').dispatchEvent(
+    new window.Event('submit', { bubbles: true, cancelable: true })
+  );
+  const stored = window.localStorage.getItem('edmsDocs');
+
+  const html = fs.readFileSync(path.join(__dirname, '..', 'EDMS.html'), 'utf-8');
+  const jqueryPath = path.resolve(require.resolve('jquery/dist/jquery.min.js'));
+  const treeviewPath = path.resolve(path.join(__dirname, '..', 'treeview.js'));
+  const inline = html
+    .replace('<script src="tailwindstub.js"></script>', '')
+    .replace('<link rel="stylesheet" href="tailwind.css"/>', '')
+    .replace('<link rel="stylesheet" href="treeview.css"/>', '')
+    .replace('jquery.min.js', 'file://' + jqueryPath)
+    .replace('treeview.js', 'file://' + treeviewPath);
+  const dom2 = new JSDOM(inline, {
+    runScripts: 'dangerously',
+    resources: 'usable',
+    url: 'http://localhost',
+    beforeParse(win) {
+      win.localStorage.setItem('edmsDocs', stored);
+    },
+  });
+  await new Promise((resolve) => {
+    dom2.window.addEventListener('load', () => setTimeout(resolve, 0));
+  });
+  const labels = [...dom2.window.document.querySelectorAll('.tv-label')].map((l) => l.textContent);
+  expect(labels).toContain(newProj);
 });

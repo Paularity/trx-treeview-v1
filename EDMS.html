@@ -178,6 +178,7 @@
         if (saved) {
           documents.length = 0;
           documents.push(...JSON.parse(saved));
+          ensureProjectsFromDocs();
         }
       }
 
@@ -215,6 +216,26 @@
         return null;
       }
 
+      function addProjectNode(name) {
+        if (findProject(name)) return;
+        const childMatch = name.match(/^(\d{4})-/);
+        if (childMatch) {
+          const root = projects.find(p => p.text.startsWith(childMatch[1] + ' '));
+          if (root) {
+            root.nodes = root.nodes || [];
+            root.nodes.push({ text: name });
+            return;
+          }
+        }
+        projects.push({ text: name });
+      }
+
+      function ensureProjectsFromDocs() {
+        documents.forEach(doc => {
+          addProjectNode(doc.project);
+        });
+      }
+
       function populateProjectDropdown() {
         const select = $("#docProject");
         select.empty();
@@ -250,7 +271,14 @@
           const label = [...document.querySelectorAll('#treeview .tv-label')].find(
             (el) => el.textContent === selectedProject
           );
-          if (label) label.click();
+          if (label) {
+            let p = label.parentElement;
+            while (p && p.id !== 'treeview') {
+              if (p.tagName === 'LI') p.classList.remove('tv-collapsed');
+              p = p.parentElement;
+            }
+            label.click();
+          }
         }
       }
 
@@ -298,9 +326,7 @@
         if (idx === "") documents.push(doc);
         else documents[idx] = doc;
 
-        if (!findProject(doc.project)) {
-          projects.push({ text: doc.project });
-        }
+        addProjectNode(doc.project);
 
         closeModal();
         saveDocs();
