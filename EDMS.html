@@ -178,6 +178,7 @@
         if (saved) {
           documents.length = 0;
           documents.push(...JSON.parse(saved));
+          ensureProjectsFromDocs();
         }
       }
 
@@ -213,6 +214,14 @@
           }
         }
         return null;
+      }
+
+      function ensureProjectsFromDocs() {
+        documents.forEach(doc => {
+          if (!findProject(doc.project)) {
+            projects.push({ text: doc.project });
+          }
+        });
       }
 
       function populateProjectDropdown() {
