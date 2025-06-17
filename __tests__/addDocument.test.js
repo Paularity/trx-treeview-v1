@@ -80,6 +80,28 @@ test('selection persists after adding a document', () => {
   expect(selected.textContent).toBe('2200 - Leach Project');
 });
 
+test('adding a document for a new project adds a tree node', () => {
+  const { window } = dom;
+  window.openDocModal();
+  const newProj = '2400 - New Node';
+  const select = window.document.getElementById('docProject');
+  const opt = window.document.createElement('option');
+  opt.value = newProj;
+  opt.textContent = newProj;
+  select.appendChild(opt);
+  select.value = newProj;
+  window.document.getElementById('docTitle').value = 'Doc';
+  window.document.getElementById('docCode').value = 'DOC';
+  window.document.getElementById('docVersion').value = '1';
+  window.document.getElementById('docForm').dispatchEvent(
+    new window.Event('submit', { bubbles: true, cancelable: true })
+  );
+  const labels = [...window.document.querySelectorAll('.tv-label')].map(
+    (el) => el.textContent
+  );
+  expect(labels).toContain(newProj);
+});
+
 test('child document appears when parent is selected', () => {
   const { window } = dom;
   window.openDocModal();
