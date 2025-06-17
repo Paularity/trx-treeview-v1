@@ -44,6 +44,22 @@ test('addProject adds a new root node', () => {
   expect(after).toBe(before + 1);
 });
 
+test('newly added project is selected', () => {
+  dom.window.prompt = jest.fn().mockReturnValue('Selected Project');
+  dom.window.addProject();
+  const selected = dom.window.document.querySelector('.tv-label.selected');
+  expect(selected.textContent).toBe('Selected Project');
+});
+
+test('addProject updates dropdown', () => {
+  dom.window.prompt = jest.fn().mockReturnValue('Dropdown Project');
+  dom.window.addProject();
+  dom.window.openDocModal();
+  const options = [...dom.window.document.querySelectorAll('#docProject option')].map(o => o.value);
+  expect(options).toContain('Dropdown Project');
+  dom.window.closeModal();
+});
+
 test('node click selects the node', () => {
   const label = dom.window.document.querySelector('.tv-label');
   label.click();

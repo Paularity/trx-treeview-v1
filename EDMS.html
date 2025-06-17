@@ -204,6 +204,30 @@
         return all;
       }
 
+      function findProject(name, nodes = projects) {
+        for (const node of nodes) {
+          if (node.text === name) return node;
+          if (node.nodes) {
+            const found = findProject(name, node.nodes);
+            if (found) return found;
+          }
+        }
+        return null;
+      }
+
+      function ensureProjectNode(name) {
+        if (findProject(name)) return;
+        for (const root of projects) {
+          const code = root.text.split(" ")[0];
+          if (name.startsWith(code) && name !== root.text) {
+            root.nodes = root.nodes || [];
+            root.nodes.push({ text: name });
+            return;
+          }
+        }
+        projects.push({ text: name });
+      }
+
       function populateProjectDropdown() {
         const select = $("#docProject");
         select.empty();
@@ -222,7 +246,7 @@
       }
 
       function renderTree() {
-        new TreeView(document.getElementById("treeview"), {
+        const tree = new TreeView(document.getElementById("treeview"), {
           data: projects,
           onNodeClick: function (node) {
             selectedProject = node.text;
@@ -235,6 +259,12 @@
             );
           },
         });
+        if (selectedProject) {
+          const label = [...document.querySelectorAll('#treeview .tv-label')].find(
+            (el) => el.textContent === selectedProject
+          );
+          if (label) label.click();
+        }
       }
 
       function renderDocs(docs = documents) {
@@ -280,10 +310,15 @@
         };
         if (idx === "") documents.push(doc);
         else documents[idx] = doc;
+
+        ensureProjectNode(doc.project);
+
         closeModal();
         saveDocs();
         renderDocs();
         showDocDetails(doc);
+        selectedProject = doc.project;
+        renderTree();
       });
 
       function editDoc(i) {
@@ -304,6 +339,8 @@
           saveDocs();
           renderDocs();
           $("#docDetails").html("Select a document to view details.");
+          selectedProject = null;
+          renderTree();
         }
       }
 
@@ -311,7 +348,9 @@
         const newProj = prompt("Enter project name:");
         if (newProj) {
           projects.push({ text: newProj });
+          selectedProject = newProj;
           renderTree();
+          populateProjectDropdown();
         }
       }
 

@@ -62,6 +62,71 @@ test('adding a document updates the table and list', () => {
   expect(lastRow.firstElementChild.textContent).toBe('2200 - Leach Project');
 });
 
+test('selection persists after adding a document', () => {
+  const { window } = dom;
+  const label = [...window.document.querySelectorAll('.tv-label')].find(
+    (el) => el.textContent === '2200 - Leach Project'
+  );
+  label.click();
+  window.openDocModal();
+  window.document.getElementById('docProject').value = '2200 - Leach Project';
+  window.document.getElementById('docTitle').value = 'Persist';
+  window.document.getElementById('docCode').value = 'PRS';
+  window.document.getElementById('docVersion').value = '1';
+  window.document.getElementById('docForm').dispatchEvent(
+    new window.Event('submit', { bubbles: true, cancelable: true })
+  );
+  const selected = window.document.querySelector('.tv-label.selected');
+  expect(selected.textContent).toBe('2200 - Leach Project');
+});
+
+test('adding a document for a new project adds a tree node', () => {
+  const { window } = dom;
+  window.openDocModal();
+  const newProj = '2400 - New Node';
+  const select = window.document.getElementById('docProject');
+  const opt = window.document.createElement('option');
+  opt.value = newProj;
+  opt.textContent = newProj;
+  select.appendChild(opt);
+  select.value = newProj;
+  window.document.getElementById('docTitle').value = 'Doc';
+  window.document.getElementById('docCode').value = 'DOC';
+  window.document.getElementById('docVersion').value = '1';
+  window.document.getElementById('docForm').dispatchEvent(
+    new window.Event('submit', { bubbles: true, cancelable: true })
+  );
+  const labels = [...window.document.querySelectorAll('.tv-label')].map(
+    (el) => el.textContent
+  );
+  expect(labels).toContain(newProj);
+});
+
+test('adding a document for a new subproject adds child node', () => {
+  const { window } = dom;
+  window.openDocModal();
+  const newChild = '2200-03 - Extra';
+  const select = window.document.getElementById('docProject');
+  const opt = window.document.createElement('option');
+  opt.value = newChild;
+  opt.textContent = newChild;
+  select.appendChild(opt);
+  select.value = newChild;
+  window.document.getElementById('docTitle').value = 'Doc';
+  window.document.getElementById('docCode').value = 'DOC';
+  window.document.getElementById('docVersion').value = '1';
+  window.document.getElementById('docForm').dispatchEvent(
+    new window.Event('submit', { bubbles: true, cancelable: true })
+  );
+  const rootLi = [...window.document.querySelectorAll('.tv-item[data-level="0"]')].find(
+    (li) => li.querySelector('.tv-label').textContent === '2200 - Leach Project'
+  );
+  const children = [
+    ...rootLi.querySelectorAll('.tv-item[data-level="1"] > .tv-label')
+  ].map((el) => el.textContent);
+  expect(children).toContain(newChild);
+});
+
 test('child document appears when parent is selected', () => {
   const { window } = dom;
   window.openDocModal();
