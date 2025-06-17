@@ -54,6 +54,17 @@ test('child document appears when parent is selected', () => {
   expect(titles).toContain('Child Doc');
 });
 
+test('child document appears when child node is selected', () => {
+  const { window } = dom;
+  const child = [...window.document.querySelectorAll('.tv-label')].find(
+    (el) => el.textContent === '2200-01 - Assembly'
+  );
+  child.click();
+  const rows = [...window.document.querySelectorAll('#docTableBody tr')];
+  const titles = rows.map((r) => r.children[1].textContent);
+  expect(titles).toContain('Child Doc');
+});
+
 test('clicking a row shows document details', () => {
   const { window } = dom;
   const row = window.document.querySelector('#docTableBody').lastElementChild;
