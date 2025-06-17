@@ -148,6 +148,8 @@
         "2300-02 - Reports": "Reporting documents.",
       };
 
+      let selectedProject = null;
+
       window.documents = [
         {
           project: "2200-01 - Assembly",
@@ -223,6 +225,7 @@
         new TreeView(document.getElementById("treeview"), {
           data: projects,
           onNodeClick: function (node) {
+            selectedProject = node.text;
             const docs = getDocsForNode(node);
             renderDocs(docs);
             $("#docDetails").html(
@@ -256,6 +259,9 @@
         $("#modalTitle").text("Add Document");
         $("#docForm")[0].reset();
         $("#docId").val("");
+        if (selectedProject) {
+          $("#docProject").val(selectedProject);
+        }
         $("#docModal").removeClass("hidden");
       }
 

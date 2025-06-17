@@ -34,6 +34,19 @@ test('project dropdown contains existing projects', () => {
   window.closeModal();
 });
 
+test('modal selects current project when opening', () => {
+  const { window } = dom;
+  const label = [...window.document.querySelectorAll('.tv-label')].find(
+    el => el.textContent === '2300 - Mining Project'
+  );
+  label.click();
+  window.openDocModal();
+  expect(window.document.getElementById('docProject').value).toBe(
+    '2300 - Mining Project'
+  );
+  window.closeModal();
+});
+
 test('adding a document updates the table and list', () => {
   const { window } = dom;
   const initialLen = window.documents.length;
