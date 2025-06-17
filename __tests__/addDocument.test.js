@@ -102,6 +102,27 @@ test('adding a document for a new project adds a tree node', () => {
   expect(labels).toContain(newProj);
 });
 
+test('adding a document for a new child nests it under the correct root', () => {
+  const { window } = dom;
+  window.openDocModal();
+  const newProj = '2200-03 - Nested';
+  const select = window.document.getElementById('docProject');
+  const opt = window.document.createElement('option');
+  opt.value = newProj;
+  opt.textContent = newProj;
+  select.appendChild(opt);
+  select.value = newProj;
+  window.document.getElementById('docTitle').value = 'Nest';
+  window.document.getElementById('docCode').value = 'NST';
+  window.document.getElementById('docVersion').value = '1';
+  window.document.getElementById('docForm').dispatchEvent(
+    new window.Event('submit', { bubbles: true, cancelable: true })
+  );
+  const root = window.findProject('2200 - Leach Project');
+  const childNames = root.nodes.map(n => n.text);
+  expect(childNames).toContain(newProj);
+});
+
 test('child document appears when parent is selected', () => {
   const { window } = dom;
   window.openDocModal();
